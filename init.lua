@@ -20,3 +20,10 @@ require "user.alpha"
 require "user.whichkey"
 require "user.autocommands"
 require "user.swapbuffers"
+--------
+--[Light/Dark Toggle for Neovim, Fish, and Kitty](https://evantravers.com/articles/2022/02/08/light-dark-toggle-for-neovim-fish-and-kitty/)
+--if os.getenv('theme') == 'light' then
+--  vim.o.background = 'light'
+--end
+--------
+require('dark_notify').run()
