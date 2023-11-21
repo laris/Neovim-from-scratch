@@ -56,9 +56,11 @@ end
 --M = {}
 ----M.cargo_play()
 --function M.cargo_play()
-function cargo_play()
+function cargo_play(...)
+  local args = {...}
+  local args_string = table.concat(args, ' ')
   local current_file = vim.fn.expand('%:p')
-  local command = string.format('cargo play %s', current_file)
+  local command = string.format('cargo play %s %s', args_string, current_file)
   --vim.api.nvim_out_write("debug: "..current_file.."--"..command.."\n")
   --vim.fn.system(command)
   --vim.cmd("silent execute '!" .. command .. "'")
@@ -110,11 +112,16 @@ function cargo_play()
 end
 --return M
 
-function checked_cargo_play()
+function checked_cargo_play(...)
+  local args = {...}
+  -- Convert the table of arguments to a string with spaces
+  local args_string = table.concat(args, ' ')
+  -- Now args_string contains all the arguments separated by spaces
+  --vim.api.nvim_out_write("args="..args_string.."\n")
   local status_cargo, msg_cargo = pcall(check_cargo_play)
   local status_rust_file, msg_rust_file = pcall(is_rust_file)
   if status_cargo and status_rust_file then
-    cargo_play()
+    cargo_play(args_string)
     return
   else
     vim.api.nvim_out_write("Error: need both `cargo play` and `rust` file:\ncargo play status: " .. msg_cargo .."\nCurrent file type: ".. msg_rust_file .. "\n")
@@ -123,7 +130,8 @@ function checked_cargo_play()
 end
 
 --vim.cmd("command! -nargs=0 CargoPlay call s:checked_cargo_play()")
-vim.cmd("command! -nargs=0 CargoPlay lua checked_cargo_play()")
+--vim.cmd("command! -nargs=0 CargoPlay lua checked_cargo_play()")
+vim.cmd("command! -nargs=* CargoPlay lua checked_cargo_play(<f-args>)")
 --local keymap = vim.api.nvim_set_keymap
 --local opts = { noremap = true, silent = true }
 
