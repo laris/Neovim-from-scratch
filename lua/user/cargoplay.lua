@@ -50,3 +50,27 @@ else
   vim.api.nvim_out_write("Error: " .. msg_cargo .. msg_rust_file .. "\n")
   return
 end
+
+--vim.cmd([[ command! CargoPlay lua require('mycommands').cargo_play() ]])
+
+--M = {}
+----M.cargo_play()
+--function M.cargo_play()
+--  local current_file = vim.fn.expand('%:p')
+--  local command = string.format('cargo play %s', current_file)
+--  vim.api.nvim_out_write("debug: "..current_file.."--"..command.."\n")
+--  vim.fn.system(command)
+--  return "cargo_play"
+--end
+--return M
+
+--local keymap = vim.api.nvim_set_keymap
+--local opts = { noremap = true, silent = true }
+
+--swapbuffers.setup({
+--  ignore_filetypes = {'NvimTree'},
+--})
+
+-- keymap
+--keymap("n", "<C-c>r", vim.cmd [[!cargo play %]], opts)
+
