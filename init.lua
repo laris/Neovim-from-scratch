@@ -27,3 +27,4 @@ require "user.swapbuffers"
 --end
 --------
 require('dark_notify').run()
+require "user.cargoplay"
