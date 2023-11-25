@@ -121,6 +121,7 @@ function checked_cargo_play(...)
   local status_cargo, msg_cargo = pcall(check_cargo_play)
   local status_rust_file, msg_rust_file = pcall(is_rust_file)
   if status_cargo and status_rust_file then
+    vim.cmd(":w")
     cargo_play(args_string)
     return
   else
