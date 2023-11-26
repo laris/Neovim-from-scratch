@@ -56,11 +56,39 @@ end
 --M = {}
 ----M.cargo_play()
 --function M.cargo_play()
+function splitString(inputString)
+    local pattern = "%s+%-%-%s+"
+    local firstPart, secondPart = inputString:match("(.*)" .. pattern .. "(.*)")
+
+    if firstPart and secondPart then
+        return firstPart, secondPart
+    else
+        return inputString
+    end
+end
+
+-- Example usage:
+--local input = "This is a sample string -- with a comment"
+--local part1, part2 = splitString(input)
+--
+--if part2 then
+--    print("First Part:", part1)
+--    print("Second Part:", part2)
+--else
+--    print("String not split:", part1)
+--end
+
 function cargo_play(...)
   local args = {...}
   local args_string = table.concat(args, ' ')
   local current_file = vim.fn.expand('%:p')
-  local command = string.format('cargo play %s %s', args_string, current_file)
+  local opts, args = splitString(args_string)
+  local command -- split the input if args exist
+  if args then
+    command = string.format('cargo play %s %s %s', opts, current_file, args)
+  else
+    command = string.format('cargo play %s %s', opts, current_file)
+  end
   --vim.api.nvim_out_write("debug: "..current_file.."--"..command.."\n")
   --vim.fn.system(command)
   --vim.cmd("silent execute '!" .. command .. "'")
