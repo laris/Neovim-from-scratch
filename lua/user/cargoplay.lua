@@ -56,22 +56,103 @@ end
 --M = {}
 ----M.cargo_play()
 --function M.cargo_play()
+--------------------------------------------------------------------------------
+function split_args(arg_string)
+  local args = {}
+  local pattern = '%S+'
+  for arg in string.gmatch(arg_string, pattern) do
+    table.insert(args, arg)
+  end
+  return args
+end
+
 function cargo_play(...)
-  local args = {...}
-  local args_string = table.concat(args, ' ')
+  local arg_string = table.concat({...}, " ")
+  local args = split_args(arg_string)
+  local cargo_play_args_flags_options = {}
+  local args_pass_into_program = {}
   local current_file = vim.fn.expand('%:p')
-  local command = string.format('cargo play %s %s', args_string, current_file)
-  --vim.api.nvim_out_write("debug: "..current_file.."--"..command.."\n")
-  --vim.fn.system(command)
-  --vim.cmd("silent execute '!" .. command .. "'")
-  --vim.cmd("silent! read ! " .. command)
+  local split_index = nil
+
+  -- Find the index of "--" if it exists
+  for i, arg in ipairs(args) do
+    --vim.api.nvim_out_write("debug: arg["..i.."]='"..tostring(arg).."'\n")
+    if arg == "--" then
+      split_index = i
+     --vim.api.nvim_out_write("debug: split_index="..i.."\n")
+      break
+    end
+  end
+
+  -- Split args into cargo_play_args_flags_options and args_pass_into_program
+  if split_index then
+    for i = 1, split_index - 1 do
+      table.insert(cargo_play_args_flags_options, args[i])
+    end
+    for i = split_index + 1, #args do
+      table.insert(args_pass_into_program, args[i])
+    end
+
+     -- cargo_play_args_flags_options
+  --local debug_output = "debug: cargo_play_args_flags_options={"
+  --for k, v in ipairs(cargo_play_args_flags_options) do
+  --  debug_output = debug_output .. tostring(v) .. " "
+  --end
+  --debug_output = debug_output .. "}\n"
+  --vim.api.nvim_out_write(debug_output)
+  
+  -- args_pass_into_program
+  --local debug_output = "debug: args_pass_into_program={"
+  --for k, v in ipairs(args_pass_into_program) do
+  --  debug_output = debug_output .. tostring(v) .. " "
+  --end
+  --debug_output = debug_output .. "}\n"
+  --vim.api.nvim_out_write(debug_output)
+
+  else
+    -- If no "--" is found, all args go to cargo_play_args_flags_options
+    cargo_play_args_flags_options = args
+  end
+
+  -- Construct the command
+  local cargo_play_args = table.concat(cargo_play_args_flags_options, ' ')
+  --vim.api.nvim_out_write("debug: cargo_play_args="..cargo_play_args.."\n")
+  local program_args = table.concat(args_pass_into_program, ' ')
+  --vim.api.nvim_out_write("debug: args_pass_into_program="..program_args.."\n")
+--  vim.api.nvim_out_write("debug: ".."cargo_play_args="..cargo_play_args.."current_file="..current_file.."program_args="..program_args.."\n")
+
+  local command
+  if #args_pass_into_program > 0 then
+    command = string.format('cargo play %s %s -- %s', cargo_play_args, current_file, program_args)
+  else
+    command = string.format('cargo play %s %s', cargo_play_args, current_file)
+  end
+
   -- Run the cargo play command and capture the output in a list
   local output = vim.fn.systemlist(command)
---------------------------------------------------------------------------------
+
   -- Display the output in the bottom minibuffer
   for _, line in ipairs(output) do
     vim.api.nvim_out_write(line .. "\n")
   end
+end
+--------------------------------------------------------------------------------
+--| function cargo_play(...)
+--|   local args = {...}
+--|   local args_string = table.concat(args, ' ')
+--|   local current_file = vim.fn.expand('%:p')
+--|   local command = string.format('cargo play %s %s', args_string, current_file)
+--|   --vim.api.nvim_out_write("debug: "..current_file.."--"..command.."\n")
+--|   --vim.fn.system(command)
+--|   --vim.cmd("silent execute '!" .. command .. "'")
+--|   --vim.cmd("silent! read ! " .. command)
+--|   -- Run the cargo play command and capture the output in a list
+--|   local output = vim.fn.systemlist(command)
+--| --------------------------------------------------------------------------------
+--|   -- Display the output in the bottom minibuffer
+--|   for _, line in ipairs(output) do
+--|     vim.api.nvim_out_write(line .. "\n")
+--|   end
 --------------------------------------------------------------------------------
 --    -- Create a new buffer for displaying the output
 --  local output_buffer = vim.api.nvim_create_buf(false, true)
@@ -109,7 +190,7 @@ function cargo_play(...)
 --  vim.fn.win_gotoid(original_window)
 --  vim.fn.setpos('.', original_cursor)
  --------------------------------------------------------------------------------
-end
+--end
 --return M
 
 function checked_cargo_play(...)
