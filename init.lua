@@ -26,5 +26,5 @@ require "user.swapbuffers"
 --  vim.o.background = 'light'
 --end
 --------
-require('dark_notify').run()
+--require('dark_notify').run()
 require "user.cargoplay"
